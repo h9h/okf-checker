@@ -1,5 +1,7 @@
 import { parseArgs } from "node:util";
 import { runCheck } from "./commands/check";
+import { runGenerateIndex } from "./commands/generate-index";
+import type { WriteIndexFilesResult } from "./generator/write-index-files";
 import { exitCodeForReport } from "./report/exit-code";
 import { buildReport, formatJson, formatText } from "./report/reporter";
 import type { Finding } from "./rules/types";
@@ -48,7 +50,45 @@ function runCheckCommand(args: string[]): number {
   return exitCodeForReport(report);
 }
 
-export function main(argv: string[] = process.argv.slice(2)): number {
+async function runGenerateIndexCommand(args: string[]): Promise<number> {
+  const { values, positionals } = parseArgs({
+    args,
+    options: {
+      "no-overwrite": { type: "boolean", default: false },
+      help: { type: "boolean", short: "h", default: false },
+    },
+    allowPositionals: true,
+  });
+
+  if (values.help) {
+    console.log(USAGE);
+    return 0;
+  }
+
+  const bundleDir = positionals[0];
+  if (!bundleDir) {
+    console.error("Error: <bundle-dir> is required\n");
+    console.error(USAGE);
+    return 2;
+  }
+
+  let result: WriteIndexFilesResult;
+  try {
+    result = await runGenerateIndex(bundleDir, { overwrite: !values["no-overwrite"] });
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+    return 2;
+  }
+
+  console.log(`Wrote ${result.written.length} index.md file(s).`);
+  if (result.skipped.length > 0) {
+    console.log(`Skipped ${result.skipped.length} existing file(s) (not overwritten):`);
+    for (const path of result.skipped) console.log(`  ${path}`);
+  }
+  return 0;
+}
+
+export async function main(argv: string[] = process.argv.slice(2)): Promise<number> {
   const [command, ...rest] = argv;
 
   if (command === "-h" || command === "--help") {
@@ -64,6 +104,8 @@ export function main(argv: string[] = process.argv.slice(2)): number {
   switch (command) {
     case "check":
       return runCheckCommand(rest);
+    case "generate-index":
+      return runGenerateIndexCommand(rest);
     default:
       console.error(`Unknown command: ${command}\n`);
       console.error(USAGE);
@@ -72,5 +114,5 @@ export function main(argv: string[] = process.argv.slice(2)): number {
 }
 
 if (import.meta.main) {
-  process.exit(main());
+  main().then((code) => process.exit(code));
 }

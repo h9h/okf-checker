@@ -61,6 +61,18 @@ bun run src/cli.ts generate-index <bundle-dir> [--no-overwrite]
 
 Writes an `index.md` for the bundle root and every subdirectory. By default existing files are overwritten. With `--no-overwrite`, existing files are left untouched (an interactive prompt asks per file when run in a terminal; in non-interactive contexts such as CI, conflicting files are skipped and reported, and the command still exits `0`).
 
+## Building a standalone binary
+
+```sh
+bun run build
+```
+
+Compiles `src/cli.ts` into a single native executable at `dist/okf-checker` that runs without Bun installed:
+
+```sh
+./dist/okf-checker check <bundle-dir>
+```
+
 ## Development
 
 ```sh

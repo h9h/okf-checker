@@ -11,12 +11,13 @@ function rulesFor(findings: ReturnType<typeof runCheck>, path: string): string[]
 }
 
 describe("runCheck integration", () => {
-  it("valid-bundle has no errors (only the expected not-a-git-repo warning)", () => {
+  it("valid-bundle has no errors (only the expected not-a-git-repo and no-types-given warnings)", () => {
     const findings = runCheck(join(FIXTURES, "valid-bundle"));
     const report = buildReport(findings);
     expect(report.summary.errors).toBe(0);
     expect(exitCodeForReport(report)).toBe(0);
     expect(findings.some((f) => f.rule === "not-a-git-repo")).toBe(true);
+    expect(findings.some((f) => f.rule === "no-types-given")).toBe(true);
   });
 
   it("missing-type fixture flags missing-type as an error", () => {
@@ -35,6 +36,7 @@ describe("runCheck integration", () => {
     const findings = runCheck(join(FIXTURES, "unknown-type"));
     expect(rulesFor(findings, "widget.md")).toContain("unknown-type");
     expect(rulesFor(findings, "types.md")).not.toContain("unknown-type");
+    expect(findings.some((f) => f.rule === "no-types-given")).toBe(false);
   });
 
   it("reserved-frontmatter fixture flags both root and nested index.md with disallowed frontmatter", () => {

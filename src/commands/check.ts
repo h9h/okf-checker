@@ -3,6 +3,7 @@ import { parseConceptFile } from "../core/concept";
 import { loadTypesList } from "../core/types-list";
 import { errorRules, warningRules } from "../rules";
 import type { Finding, RuleContext } from "../rules/types";
+import { noTypesGiven } from "../rules/warnings/no-types-given";
 import { notAGitRepo } from "../rules/warnings/not-a-git-repo";
 
 export interface CheckOptions {
@@ -15,6 +16,10 @@ export function runCheck(bundleDir: string, options: CheckOptions = {}): Finding
   const permissibleTypes = typesResult.kind === "unset" ? undefined : typesResult.types;
 
   const findings: Finding[] = [];
+
+  if (typesResult.kind === "unset") {
+    findings.push(...noTypesGiven());
+  }
 
   for (const file of tree.files) {
     const parsed = parseConceptFile(file.absolutePath);

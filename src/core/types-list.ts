@@ -13,7 +13,8 @@ function extractHeadingTypes(body: string): string[] {
   const types: string[] = [];
   for (const line of body.split(/\r?\n/)) {
     const match = HEADING_LINE.exec(line);
-    if (match) types.push(match[1]);
+    const heading = match?.[1];
+    if (heading) types.push(heading);
   }
   return types;
 }

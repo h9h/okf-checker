@@ -28,3 +28,43 @@ Given root of a bundle:
 Generate index.md files for root and all subdirectories
 - commandline parameter whether to overwrite without asking (default)
 
+## Installation
+
+```sh
+bun install
+```
+
+## Usage
+
+### Check a bundle for conformance
+
+```sh
+bun run src/cli.ts check <bundle-dir> [--types <comma-list-or-path>] [--json]
+```
+
+- `--types` — a comma-separated list of permissible types, or a local path to a markdown file listing them as headings (default: `<bundle-dir>/types.md` if present).
+- `--json` — emit a machine-readable JSON report instead of human-readable text.
+
+Exit codes:
+
+| Code | Meaning |
+|------|---------|
+| 0    | No conformance errors (warnings may still be present) |
+| 1    | At least one conformance error found |
+| 2    | Tool/usage failure (bad arguments, missing bundle directory, unreadable types file) |
+
+### Generate index.md files
+
+```sh
+bun run src/cli.ts generate-index <bundle-dir> [--no-overwrite]
+```
+
+Writes an `index.md` for the bundle root and every subdirectory. By default existing files are overwritten. With `--no-overwrite`, existing files are left untouched (an interactive prompt asks per file when run in a terminal; in non-interactive contexts such as CI, conflicting files are skipped and reported, and the command still exits `0`).
+
+## Development
+
+```sh
+bun test        # run the test suite
+bun run typecheck  # type-check with tsc --noEmit
+```
+

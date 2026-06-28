@@ -1,0 +1,18 @@
+{
+  "name": "okf-checker",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "okf-checker": "./src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

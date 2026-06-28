@@ -2,6 +2,18 @@
   "name": "okf-checker",
   "version": "0.1.0",
   "type": "module",
+  "tags": [
+    "cli",
+    "checker",
+    "okf"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/h9h/okf-checker.git"
+  },
+  "author": "Michael Heinke",
+  "description": "A CLI tool for checking OKF files.",
+  "license": "MIT",
   "bin": {
     "okf-checker": "./src/cli.ts"
   },
